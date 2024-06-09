@@ -20,19 +20,14 @@ origins = ["*"]
 
 
 @router.post("/matching/candidate/{user_id}/")
-def upload_candidate(user_id: int, candidate: str):
+def upload_candidate(user_id: int, candidate_text: str):
     """
 
     """
     try:
-        # 2. llamar a la capa de service para que:
-            # 2.1. preprocese el cv (limpieza de datos, tokenizacion, etc)
-            vector = model.infer_vector(candidate.split())
-            print(vector)
-            index.upsert([vector])
-
-            # 2.2. llame a la capa de matching para que compare el cv con las ofertas
-            # 2.3. avise a las empresas con las que hizo matching
+        candidate_vector = model.infer_vector(candidate_text.split()).tolist()
+        print("Vector del candidato:", candidate_vector)
+        index.upsert([(candidate_text, candidate_vector)])
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
     return {"message": "Candidate uploaded successfully"}
