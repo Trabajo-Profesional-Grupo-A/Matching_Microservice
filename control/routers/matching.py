@@ -7,6 +7,8 @@ from fastapi import (
     HTTPException,
 )
 
+from config.setup import model, index
+
 from control.codes import (
     BAD_REQUEST,
 )
@@ -16,7 +18,6 @@ router = APIRouter(
 )
 origins = ["*"]
 
-# resume or candidate?
 
 @router.post("/matching/candidate/{user_id}/")
 def upload_candidate(user_id: int, candidate: str):
@@ -26,9 +27,12 @@ def upload_candidate(user_id: int, candidate: str):
     try:
         # 2. llamar a la capa de service para que:
             # 2.1. preprocese el cv (limpieza de datos, tokenizacion, etc)
+            vector = model.infer_vector(candidate.split())
+            print(vector)
+            index.upsert([vector])
+
             # 2.2. llame a la capa de matching para que compare el cv con las ofertas
             # 2.3. avise a las empresas con las que hizo matching
-        pass
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
     return {"message": "Candidate uploaded successfully"}
