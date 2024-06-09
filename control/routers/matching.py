@@ -7,7 +7,7 @@ from fastapi import (
     HTTPException,
 )
 
-from config.setup import model, index
+from config.setup import model, index_cv, index_jd
 
 from control.codes import (
     BAD_REQUEST,
@@ -21,49 +21,68 @@ origins = ["*"]
 
 @router.post("/matching/candidate/{user_id}/")
 def upload_candidate(user_id: int, candidate_text: str):
-    """
-
-    """
     try:
-        candidate_vector = model.infer_vector(candidate_text.split()).tolist()
+        #Preprocesar el texto
+
+        candidate_vector = model.infer_vector(candidate_text.split())
+
         print("Vector del candidato:", candidate_vector)
-        index.upsert([(candidate_text, candidate_vector)])
+        
+        index_cv.upsert(
+            vectors=[
+                {"id": str(user_id), "values": candidate_vector},
+            ],
+            namespace="ns1"
+        )
+    
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
     return {"message": "Candidate uploaded successfully"}
 
-@router.post("/matching/job")
+@router.post("/matching/job/{job_id}/")
 def upload_job(job_id: int, job: str):
-    """
-
-    """
     try:
-        pass
+        #Preprocesar el texto
+
+        job_vector = model.infer_vector(job.split())
+
+        print("Vector del candidato:", job_vector)
+        
+        index_jd.upsert(
+            vectors=[
+                {"id": str(job_id), "values": job_vector},
+            ],
+            namespace="ns1"
+        )
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
     return {"message": "Job uploaded successfully"}
 
 @router.get("/matching/candidate/{job_id}/")
 def get_candidates(job_id: int, k: int = 10):
-    """
-
-    """
     try:
-        pass
+        job_vector = index_jd.fetch(ids=[str(job_id)], namespace="ns1")["vectors"].get(str(job_id))["values"]
+        print("Vector del trabajo:", job_vector)
+        print(k)
+        candidates = index_cv.query(vector=job_vector, include_values = True, top_k=k, namespace="ns1")
+        print("Candidatos:", candidates)
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
-    return {"message": "Candidates retrieved successfully"}
-    #return generate_response_candidates()
+    return candidates["matches"][0].get("id")
 
+@router.delete("/matching/candidate/{user_id}/")
+def delete_candidate(user_id: int):
+    try:
+        index_cv.delete(ids=[str(user_id)], namespace="ns1")
+    except Exception as error:
+        raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
+    return {"message": "Candidate deleted successfully"}
 
-# # Ruta para buscar vecinos más cercanos
-# @app.get("/search_nearest_neighbors/")
-# async def search_nearest_neighbors(query_vector: List[float]):
-#     """
-#     Endpoint to search for nearest neighbors given a query vector.
-#     """
-#     nearest_neighbors = annoy_index.get_nns_by_vector(query_vector, 10, include_distances=True)  # Buscar los 10 vecinos más cercanos
-#     # Calcular la distancia del coseno para cada vecino
-#     nearest_neighbors_with_distances = [(neighbor, cosine(query_vector, annoy_index.get_item_vector(neighbor))) for neighbor in nearest_neighbors]
-#     return {"nearest_neighbors": nearest_neighbors_with_distances}
+@router.delete("/matching/job/{job_id}/")
+def delete_job(job_id: int):
+    try:
+        index_jd.delete(ids=[str(job_id)], namespace="ns1")
+    except Exception as error:
+        raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
+    return {"message": "Job deleted successfully"}
 
