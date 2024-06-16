@@ -40,3 +40,5 @@ if INDEX_JD not in pc.list_indexes().names():
 # Connect to the index
 index_cv = pc.Index(INDEX_CV)
 index_jd = pc.Index(INDEX_JD)
+
+#comentario
