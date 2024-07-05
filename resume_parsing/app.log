@@ -1,0 +1,3 @@
+2024-07-02 23:34:27,466 (parse_CV_JD_into_JSON.py:11) - INFO: Started to read from Data\Resumes
+2024-07-02 23:34:27,469 (parse_CV_JD_into_JSON.py:16) - INFO: Reading from Data\Resumes is now complete.
+2024-07-02 23:34:27,470 (parse_CV_JD_into_JSON.py:25) - INFO: Started parsing the resumes.

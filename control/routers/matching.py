@@ -2,16 +2,27 @@
 This module contains the API endpoints for the matching service.
 """
 
+import os
+from resume_parsing.scripts import JobDescriptionProcessor
+from resume_parsing.scripts.ResumeProcessor import ResumeProcessor
+
 from fastapi import (
     APIRouter,
     HTTPException,
 )
+import firebase_admin
+from firebase_admin import credentials, storage
+
+cred = credentials.Certificate("firebase_credentials.json")
+firebase_admin.initialize_app(cred, {"storageBucket": "tpp-grupoa.appspot.com"})
+bucket = storage.bucket()
 
 from config.setup import model, index_cv, index_jd
 
 from control.codes import (
     BAD_REQUEST,
 )
+from control.models.models import DataJD, ResumeFields
 
 router = APIRouter(
     tags=["Matching"],
@@ -85,4 +96,41 @@ def delete_job(job_id: int):
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
     return {"message": "Job deleted successfully"}
+
+@router.get("/user/fields", response_model=ResumeFields)
+def get_fields_of_cv(email: str):
+    file_name = f"{email}.pdf"
+    file_path = f"/tmp/{file_name}"
+
+    try:
+        blob = bucket.blob(file_name)
+        if not blob.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        blob.download_to_filename(file_path)
+        
+        dict = ResumeProcessor(file_path).process()
+
+        return ResumeFields(
+            education=dict["education"],
+            experience=dict["experience"],
+            job_titles=dict["job_title"],
+            skills=dict["skills"],
+            model_data=dict["model_data"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+@router.get("/company/data", response_model=DataJD)
+def get_data_of_jd_str(jd: str):
+    try:
+        dict = JobDescriptionProcessor(jd).process()
+
+        return DataJD(
+            model_data=dict["model_data"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
