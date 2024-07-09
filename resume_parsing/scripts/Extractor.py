@@ -319,7 +319,7 @@ class DataExtractor:
                 universities_spacy.add(entity.text)
 
         # Method 2: Using a list of known universities from a CSV file
-        file = r'/home/martin/tpp/resume-parsing/Data/world-universities.csv'
+        file = r'./resume_parsing/Data/world-universities.csv'
         df = pd.read_csv(file, header=None)
         known_universities = [i.lower() for i in df[1]]
         universities_csv = set()  # Use a set to avoid duplicates
@@ -351,7 +351,7 @@ class DataExtractor:
             return set(row[0] for row in reader)
         
     def _csv_skills(self):
-        skills_keywords = self._load_keywords(r'/home/martin/tpp/resume-parsing/Data/newSkills.csv')
+        skills_keywords = self._load_keywords(r'./resume_parsing/Data/newSkills.csv')
         skills = set()
 
         for keyword in skills_keywords:
@@ -451,7 +451,7 @@ class DataExtractor:
         Returns:
             str: A string containing the extracted designition.
         """
-        file = r'/home/martin/tpp/resume-parsing/Data/titles_combined.txt'
+        file = r'./resume_parsing/Data/titles_combined.txt'
         with open(file, "r", encoding='utf-8') as f:
             designation = [line.strip().lower() for line in f]
         

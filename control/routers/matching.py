@@ -123,6 +123,7 @@ def get_fields_of_cv(email: str):
             skills=dict["skills"],
             model_data=dict["model_data"]
         )
+    #http://YOUR_VM_IP:8000
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:

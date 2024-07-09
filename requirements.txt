@@ -23,4 +23,5 @@ easyocr
 pillow
 pytesseract
 firebase_admin
-
+poppler-utils
+tesseract-ocr
