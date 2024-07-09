@@ -22,4 +22,5 @@ pdf2image
 easyocr
 pillow
 pytesseract
+firebase_admin
 

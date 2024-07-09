@@ -103,11 +103,17 @@ def get_fields_of_cv(email: str):
     file_path = f"/tmp/{file_name}"
 
     try:
+        print("antes del blob")
         blob = bucket.blob(file_name)
+        print("despues del blob")
         if not blob.exists():
             raise HTTPException(status_code=404, detail="File not found")
+        print("antes del download to filename")
         blob.download_to_filename(file_path)
+        print("despues del download to filename")
         
+        print("File path", file_path)
+
         dict = ResumeProcessor(file_path).process()
 
         return ResumeFields(

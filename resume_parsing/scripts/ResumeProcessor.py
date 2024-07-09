@@ -15,7 +15,9 @@ class ResumeProcessor:
             print(f"An error occurred: {str(e)}")
 
     def _read_resumes(self) -> dict:
+        print("antes del read single_pdf")
         data = read_single_pdf(self.input_file_name)
+        print("data", data)
 
         resume_dict_OCR = self._read_resumes_OCR(self.input_file_name)
         print("resume dict ocr", resume_dict_OCR)
