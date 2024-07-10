@@ -37,7 +37,7 @@ def upload_candidate(user_email: str, user_model_data: str):
         
         index_cv.upsert(
             vectors=[
-                {"email": user_email, "vector": candidate_vector},
+                {"email": user_email, "values": candidate_vector},
             ],
             namespace="ns1"
         )
@@ -67,7 +67,7 @@ def upload_job(job_id: str, job_description: JobDescription):
         
         index_jd.upsert(
             vectors=[
-                {"id": str(job_id), "vector": job_vector},
+                {"id": str(job_id), "values": job_vector},
             ],
             namespace="ns1"
         )
