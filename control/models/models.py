@@ -29,4 +29,14 @@ class DataJD(BaseModel):
     """
     Data JD model.
     """
+    id: int
     model_data: str
+
+class JobDescription(BaseModel):
+    """
+    Job description model.
+    """
+    title: str
+    description: str
+    responsabilities: str
+    requirements: str

@@ -22,7 +22,7 @@ from config.setup import model, index_cv, index_jd
 from control.codes import (
     BAD_REQUEST,
 )
-from control.models.models import DataJD, ResumeFields
+from control.models.models import DataJD, JobDescription, ResumeFields
 
 router = APIRouter(
     tags=["Matching"],
@@ -30,18 +30,14 @@ router = APIRouter(
 origins = ["*"]
 
 
-@router.post("/matching/candidate/{user_id}/")
-def upload_candidate(user_id: int, candidate_text: str):
+@router.post("/matching/candidate/{user_email}")
+def upload_candidate(user_email: str, user_model_data: str):
     try:
-        #Preprocesar el texto
-
-        candidate_vector = model.infer_vector(candidate_text.split())
-
-        print("Vector del candidato:", candidate_vector)
+        candidate_vector = model.infer_vector(user_model_data.split())
         
         index_cv.upsert(
             vectors=[
-                {"id": str(user_id), "values": candidate_vector},
+                {"email": user_email, "vector": candidate_vector},
             ],
             namespace="ns1"
         )
@@ -51,17 +47,27 @@ def upload_candidate(user_id: int, candidate_text: str):
     return {"message": "Candidate uploaded successfully"}
 
 @router.post("/matching/job/{job_id}/")
-def upload_job(job_id: int, job: str):
+def upload_job(job_id: str, job_description: JobDescription):
     try:
-        #Preprocesar el texto
+        print("Me llego una job desc")
+        print("job_id", job_id)
+        print("job_description", job_description)
 
-        job_vector = model.infer_vector(job.split())
+        model_data = ""
+        model_data += job_description.title + " "
+        model_data += job_description.description + " "
+        model_data += " ".join(job_description.responsabilities) + " "
+        model_data += " ".join(job_description.requirements) + " "
+
+        dict = JobDescriptionProcessor(model_data).process()
+
+        job_vector = model.infer_vector(dict["model_data"].split())
 
         print("Vector del candidato:", job_vector)
         
         index_jd.upsert(
             vectors=[
-                {"id": str(job_id), "values": job_vector},
+                {"id": str(job_id), "vector": job_vector},
             ],
             namespace="ns1"
         )
@@ -130,14 +136,16 @@ def get_fields_of_cv(email: str):
         if os.path.exists(file_path):
             os.remove(file_path)
 
-@router.get("/company/data", response_model=DataJD)
-def get_data_of_jd_str(jd: str):
-    try:
-        dict = JobDescriptionProcessor(jd).process()
+# @router.get("/company/data", response_model=DataJD)
+# def get_data_of_jd_str(jd: str):
+#     try:
+#         dict = JobDescriptionProcessor(jd).process()
 
-        return DataJD(
-            model_data=dict["model_data"]
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+#         return DataJD(
+#             id=dict["id"],
+#             model_data=dict["model_data"]
+#         )
+    
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
