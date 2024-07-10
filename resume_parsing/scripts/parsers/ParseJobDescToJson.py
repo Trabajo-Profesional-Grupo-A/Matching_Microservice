@@ -18,6 +18,7 @@ class ParseJobDesc:
         self.bi_grams = KeytermExtractor(self.clean_data).bi_gramchunker()
         self.tri_grams = KeytermExtractor(self.clean_data).tri_gramchunker()
         self.model_data = DataExtractor(self.clean_data).extract_model_data()
+        self.keywords_tfidf = KeytermExtractor(self.clean_data).get_keyterms_based_on_tfidf()
 
     def get_JSON(self) -> dict:
         """
@@ -36,6 +37,7 @@ class ParseJobDesc:
             "tri_grams": str(self.tri_grams),
             "pos_frequencies": self.pos_frequencies,
             "model_data": self.model_data,
+            "keywords_tfidf": self.keywords_tfidf
         }
 
         return job_desc_dictionary

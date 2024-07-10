@@ -27,6 +27,7 @@ class ParseResume:
         self.personal_info = DataExtractor("",resume_dict_OCR).extract_personal_info()
         self.extra = DataExtractor("",resume_dict_OCR).extract_extra_info()
         self.model_data = DataExtractor(self.clean_data, resume_dict_OCR).extract_model_data()
+        self.keywords_tfidf = KeytermExtractor(self.clean_data).get_keyterms_based_on_tfidf()
 
     def get_JSON(self) -> dict:
         """
@@ -53,7 +54,8 @@ class ParseResume:
             "pos_frequencies": self.pos_frequencies,
             "personal_info": self.personal_info,
             "extra": self.extra,
-            "model_data": self.model_data
+            "model_data": self.model_data,
+            "keywords_tfidf": self.keywords_tfidf
         }
 
         return resume_dictionary

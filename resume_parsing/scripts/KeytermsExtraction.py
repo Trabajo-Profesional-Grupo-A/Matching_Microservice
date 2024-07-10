@@ -1,5 +1,6 @@
 import textacy
 from textacy import extract
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 class KeytermExtractor:
@@ -104,3 +105,15 @@ class KeytermExtractor:
                 filter_punct=True,
             )
         )
+    
+    def get_keyterms_based_on_tfidf(self):
+        """
+        Extract keyterms using the TF-IDF algorithm.
+        """
+        vectorizer = TfidfVectorizer(max_features=self.top_n_values)
+        vectors = vectorizer.fit_transform([self.raw_text])
+        feature_names = vectorizer.get_feature_names_out()
+        dense = vectors.todense()
+        denselist = dense.tolist()
+        tfidf_scores = dict(zip(feature_names, denselist[0]))
+        return tfidf_scores
