@@ -149,3 +149,15 @@ def get_fields_of_cv(email: str):
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=str(e))
 
+# {
+#   "title": "front end developer",
+#   "description": "react js typescript",
+#   "responsabilities": [
+#     "work", "to be in time"
+#   ],
+#   "requirements": [
+#     "html", "css"
+#   ]
+# }
+
+#token messi eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lc3NpIn0.tvDJgzGCRv_FAD4gT006nfElL1TjVoRZkhDmBC8Ma10
