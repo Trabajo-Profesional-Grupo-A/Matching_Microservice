@@ -105,14 +105,16 @@ def delete_job(job_id: str):
 
 @router.get("/user/fields", response_model=ResumeFields)
 def get_fields_of_cv(email: str):
-    file_name = f"/resumes/{email}.pdf"
-    file_path = f"/tmp/{file_name}"
+    file_name = f"resumes/{email}.pdf"
+    file_path = f"/tmp/{email}.pdf"
 
     try:
         print("antes del blob")
+        print(" file_name", file_name)
         blob = bucket.blob(file_name)
+        print("blob", blob)
         print("despues del blob")
-        if not blob.exists():
+        if not blob.exists(): 
             raise HTTPException(status_code=404, detail="File not found")
         print("antes del download to filename")
         blob.download_to_filename(file_path)
