@@ -96,9 +96,9 @@ def delete_candidate(user_id: int):
     return {"message": "Candidate deleted successfully"}
 
 @router.delete("/matching/job/{job_id}/")
-def delete_job(job_id: int):
+def delete_job(job_id: str):
     try:
-        index_jd.delete(ids=[str(job_id)], namespace="ns1")
+        index_jd.delete(ids=[job_id], namespace="ns1")
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
     return {"message": "Job deleted successfully"}
