@@ -105,7 +105,7 @@ def delete_job(job_id: str):
 
 @router.get("/user/fields", response_model=ResumeFields)
 def get_fields_of_cv(email: str):
-    file_name = f"{email}.pdf"
+    file_name = f"/resumes/{email}.pdf"
     file_path = f"/tmp/{file_name}"
 
     try:
