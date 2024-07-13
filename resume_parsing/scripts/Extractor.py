@@ -341,7 +341,7 @@ class DataExtractor:
         outputs = model.generate(**inputs, max_new_tokens=40)
 
         # Decode the generated keywords
-        keywords = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        keywords = tokenizer.decode(outputs[0], skip_special_tokens=True).lower()
 
         return keywords.split(", ")
     
@@ -356,8 +356,8 @@ class DataExtractor:
 
         for keyword in skills_keywords:
             if keyword.lower() in self.doc.text.lower():
-                skills.add(keyword)
-
+                skills.add(keyword.lower())
+                
         return skills
 
     def extract_skills(self):
