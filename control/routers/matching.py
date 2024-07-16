@@ -5,13 +5,16 @@ This module contains the API endpoints for the matching service.
 import os
 from resume_parsing.scripts import JobDescriptionProcessor
 from resume_parsing.scripts.ResumeProcessor import ResumeProcessor
-
+import requests
 from fastapi import (
     APIRouter,
     HTTPException,
 )
 import firebase_admin
 from firebase_admin import credentials, storage
+
+API_USERS_URL="https://users-microservice-mmuh.onrender.com"
+API_COMPANIES_URL="https://companies-microservice.onrender.com"
 
 cred = credentials.Certificate("firebase_credentials.json")
 firebase_admin.initialize_app(cred, {"storageBucket": "tpp-grupoa.appspot.com"})
@@ -81,15 +84,68 @@ def get_candidates(job_id: str, k: int = 10):
         job_vector = index_jd.fetch(ids=[job_id], namespace="ns1")["vectors"].get(job_id)["values"]
         print("Vector del trabajo:", job_vector)
 
-        candidates = index_cv.query(vector=job_vector, include_values = True, top_k=k, namespace="ns1")
+        n = round(1.5 * k, 0)
 
-        print("Candidatos:", candidates)
+        print(n)
+        candidates = index_cv.query(vector=job_vector, include_values = True, top_k=n, namespace="ns1")
+
+        ids = {}
+        for candidate in candidates.get("matches"):
+            ids[candidate["id"]] = candidate["score"]
+
+        url = API_COMPANIES_URL + f"/companies/company/job_description/{job_id}"
+        jd_data = requests.get(
+            url
+        )
+
+        score_list = {}
+
+        for email, score in ids.items():
+            url = API_USERS_URL + f"/users/user/resume/{email}"
+            resume_fields = requests.get(
+                url
+            )
+
+            print("User", resume_fields.json())
+            print("JD", jd_data.json())
+            print("Score", score)
+
+            # Job title match weight
+            job_title_weight = 1.5 if jd_data['job_title'] in resume_fields["job_titles"] else 1.0
+
+            # Requirements match weight
+            requirements_weight = 1.0
+            for req in jd_data['requirements']:
+                if req not in resume_fields["skills"] and req not in resume_fields["model_data"]:
+                    requirements_weight -= 0.1
+                    if requirements_weight < 0:
+                        requirements_weight = 0
+                        return 0
+
+            # # Pos frequencies weight
+            # pos_freq_weight = 1.0
+            # for word in data_jd['pos_frequencies'].keys():
+            #     if word in resume_clean_data:
+            #         pos_freq_weight += 0.1
+
+            # # Keyterms and keywords_tfidf weight
+            # keyterms_weight = 1.0
+            # for term in data_jd['keyterms']:
+            #     if term[0] in resume_clean_data:
+            #         keyterms_weight += 0.1
+            # for keyword in data_jd['keywords_tfidf']:
+            #     if keyword in resume_clean_data:
+            #         keyterms_weight += 0.1
+
+            # Calculate final weighted similarity score
+            final_similarity_score = score * job_title_weight * requirements_weight #* pos_freq_weight * keyterms_weight
+            score_list["email"] = final_similarity_score
+        
+        top_k_mayores = dict(sorted(score_list.items(), key=lambda item: item[1], reverse=True)[:k])
+        print("Candidatos:", top_k_mayores.keys())
+        return top_k_mayores.keys()
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
-    ids = []
-    for candidate in candidates.get("matches"):
-        ids.append(candidate["id"])
-    return {"candidates": ids}
 
 @router.delete("/matching/candidate/{user_id}/")
 def delete_candidate(user_id: int):
