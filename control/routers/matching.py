@@ -97,6 +97,7 @@ def get_candidates(job_id: str, k: int = 10):
         jd_data = requests.get(
             url
         )
+        print(jd_data)
 
         score_list = {}
 
