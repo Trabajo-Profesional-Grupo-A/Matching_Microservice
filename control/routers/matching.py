@@ -86,7 +86,10 @@ def get_candidates(job_id: str, k: int = 10):
         print("Candidatos:", candidates)
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
-    return candidates["matches"][0].get("id")
+    ids = []
+    for candidate in candidates.get("matches"):
+        ids.append(candidate["id"])
+    return {"candidates": ids}
 
 @router.delete("/matching/candidate/{user_id}/")
 def delete_candidate(user_id: int):
