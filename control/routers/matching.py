@@ -37,7 +37,7 @@ def upload_candidate(user_email: str, user_model_data: str):
         
         index_cv.upsert(
             vectors=[
-                {"email": user_email, "values": candidate_vector},
+                {"id": user_email, "values": candidate_vector},
             ],
             namespace="ns1"
         )
@@ -67,7 +67,7 @@ def upload_job(job_id: str, job_description: JobDescription):
         
         index_jd.upsert(
             vectors=[
-                {"id": str(job_id), "values": job_vector},
+                {"id": job_id, "values": job_vector},
             ],
             namespace="ns1"
         )
@@ -80,7 +80,7 @@ def get_candidates(job_id: str, k: int = 10):
     try:
         job_vector = index_jd.fetch(ids=[job_id], namespace="ns1")["vectors"].get(job_id)["values"]
         print("Vector del trabajo:", job_vector)
-        
+
         candidates = index_cv.query(vector=job_vector, include_values = True, top_k=k, namespace="ns1")
 
         print("Candidatos:", candidates)
