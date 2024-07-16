@@ -86,8 +86,8 @@ def get_candidates(job_id: str, k: int = 10):
 
         n = round(1.5 * k, 0)
 
-        print(n)
-        candidates = index_cv.query(vector=job_vector, include_values = True, top_k=n, namespace="ns1")
+        print(int(n))
+        candidates = index_cv.query(vector=job_vector, include_values = True, top_k=int(n), namespace="ns1")
 
         ids = {}
         for candidate in candidates.get("matches"):
