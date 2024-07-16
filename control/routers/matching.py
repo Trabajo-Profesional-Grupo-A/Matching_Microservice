@@ -76,12 +76,13 @@ def upload_job(job_id: str, job_description: JobDescription):
     return {"message": "Job uploaded successfully"}
 
 @router.get("/matching/candidate/{job_id}/")
-def get_candidates(job_id: int, k: int = 10):
+def get_candidates(job_id: str, k: int = 10):
     try:
-        job_vector = index_jd.fetch(ids=[str(job_id)], namespace="ns1")["vectors"].get(str(job_id))["values"]
+        job_vector = index_jd.fetch(ids=[job_id], namespace="ns1")["vectors"].get(job_id)["values"]
         print("Vector del trabajo:", job_vector)
-        print(k)
+        
         candidates = index_cv.query(vector=job_vector, include_values = True, top_k=k, namespace="ns1")
+
         print("Candidatos:", candidates)
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
