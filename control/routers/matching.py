@@ -33,7 +33,7 @@ router = APIRouter(
 origins = ["*"]
 
 
-@router.post("/matching/candidate/{user_email}")
+@router.post("/matching/candidate/{user_email}/")
 def upload_candidate(user_email: str, user_model_data: str):
     try:
         candidate_vector = model.infer_vector(user_model_data.split())
