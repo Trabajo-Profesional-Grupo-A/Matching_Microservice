@@ -25,7 +25,7 @@ from config.setup import model, index_cv, index_jd
 from control.codes import (
     BAD_REQUEST,
 )
-from control.models.models import DataJD, JobDescription, ResumeFields
+from control.models.models import DataJD, JobDescription, ModelData, ResumeFields
 
 router = APIRouter(
     tags=["Matching"],
@@ -34,9 +34,9 @@ origins = ["*"]
 
 
 @router.post("/matching/candidate/{user_email}/")
-def upload_candidate(user_email: str, user_model_data: str):
+def upload_candidate(user_email: str, user_model_data: ModelData):
     try:
-        candidate_vector = model.infer_vector(user_model_data.split())
+        candidate_vector = model.infer_vector(user_model_data.model_data.split())
         
         index_cv.upsert(
             vectors=[
