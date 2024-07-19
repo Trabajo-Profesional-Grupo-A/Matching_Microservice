@@ -163,7 +163,7 @@ def get_candidates(job_id: str, k: int = 10):
         
         print("Candidatos:", list(top_k_mayores.keys()))
         print("top_k_mayores", top_k_mayores)
-        return top_k_mayores.keys()
+        return list(top_k_mayores.keys())
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
 
