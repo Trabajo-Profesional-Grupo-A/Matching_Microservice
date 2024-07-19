@@ -106,13 +106,13 @@ def get_candidates(job_id: str, k: int = 10):
             resume_fields = requests.get(
                 url
             )
-
-            print("User", resume_fields.json())
-            print("JD", jd_data.json())
-            print("Score", score)
             
             jd_data = jd_data.json()
             resume_fields = resume_fields.json()
+
+            print("User", resume_fields)
+            print("JD", jd_data)
+            print("Score", score)
 
             print("1")
 
