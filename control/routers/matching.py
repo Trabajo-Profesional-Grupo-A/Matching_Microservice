@@ -114,8 +114,11 @@ def get_candidates(job_id: str, k: int = 10):
             jd_data = jd_data.json()
             resume_fields = resume_fields.json()
 
+            print("1")
+
             # Job title match weight
             job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
+            print("2")
 
             # Requirements match weight
             requirements_weight = 1.0
@@ -125,6 +128,8 @@ def get_candidates(job_id: str, k: int = 10):
                     if requirements_weight < 0:
                         requirements_weight = 0
                         return 0
+                    
+            print("3")
 
             # # Pos frequencies weight
             # pos_freq_weight = 1.0
@@ -144,9 +149,12 @@ def get_candidates(job_id: str, k: int = 10):
             # Calculate final weighted similarity score
             final_similarity_score = score * job_title_weight * requirements_weight #* pos_freq_weight * keyterms_weight
             score_list["email"] = final_similarity_score
+
+            print("4")
         
         top_k_mayores = dict(sorted(score_list.items(), key=lambda item: item[1], reverse=True)[:k])
         print("Candidatos:", top_k_mayores.keys())
+        print("top_k_mayores", top_k_mayores)
         return top_k_mayores.keys()
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
