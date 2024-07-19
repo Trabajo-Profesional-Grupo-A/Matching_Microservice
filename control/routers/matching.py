@@ -3,6 +3,7 @@ This module contains the API endpoints for the matching service.
 """
 
 import os
+from typing import List
 from resume_parsing.scripts import JobDescriptionProcessor
 from resume_parsing.scripts.ResumeProcessor import ResumeProcessor
 import requests
@@ -78,7 +79,7 @@ def upload_job(job_id: str, job_description: JobDescription):
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
     return {"message": "Job uploaded successfully"}
 
-@router.get("/matching/candidate/{job_id}/")
+@router.get("/matching/candidate/{job_id}/", response_model=List[str])
 def get_candidates(job_id: str, k: int = 10):
     try:
         job_vector = index_jd.fetch(ids=[job_id], namespace="ns1")["vectors"].get(job_id)["values"]
