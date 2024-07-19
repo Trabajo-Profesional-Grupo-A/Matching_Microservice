@@ -93,7 +93,7 @@ def get_candidates(job_id: str, k: int = 10):
         for candidate in candidates.get("matches"):
             ids[candidate["id"]] = candidate["score"]
 
-        url = API_COMPANIES_URL + f"/companies/company/job_description/{job_id}"
+        url = API_COMPANIES_URL + f"/companies/company/job_description_to_match/{job_id}/"
         jd_data = requests.get(
             url
         )
