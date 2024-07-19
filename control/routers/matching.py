@@ -98,6 +98,7 @@ def get_candidates(job_id: str, k: int = 10):
             url
         )
         print(jd_data)
+        jd_data = jd_data.json()
 
         score_list = {}
 
@@ -107,7 +108,6 @@ def get_candidates(job_id: str, k: int = 10):
                 url
             )
             
-            jd_data = jd_data.json()
             resume_fields = resume_fields.json()
 
             print("User", resume_fields)
