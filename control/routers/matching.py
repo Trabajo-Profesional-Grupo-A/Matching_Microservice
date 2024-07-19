@@ -102,7 +102,7 @@ def get_candidates(job_id: str, k: int = 10):
         score_list = {}
 
         for email, score in ids.items():
-            url = API_USERS_URL + f"/users/user/resume/{email}"
+            url = API_USERS_URL + f"/users/user/resume/{email}/"
             resume_fields = requests.get(
                 url
             )
