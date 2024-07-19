@@ -115,7 +115,7 @@ def get_candidates(job_id: str, k: int = 10):
             resume_fields = resume_fields.json()
 
             # Job title match weight
-            job_title_weight = 1.5 if jd_data['job_title'] in resume_fields["job_titles"] else 1.0
+            job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
 
             # Requirements match weight
             requirements_weight = 1.0
