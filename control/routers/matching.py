@@ -151,17 +151,17 @@ def get_candidates(job_id: str, k: int = 10):
 
             # Calculate final weighted similarity score
             final_similarity_score = score * job_title_weight * requirements_weight #* pos_freq_weight * keyterms_weight
-            score_list["email"] = final_similarity_score
+            score_list[email] = final_similarity_score
 
             print("4")
         
         top_k_mayores = dict(sorted(score_list.items(), key=lambda item: item[1], reverse=True)[:k])
-        
+
         for email, score in top_k_mayores.items():
             print("Email:", email)
             print("Score:", score)
         
-        print("Candidatos:", top_k_mayores.keys())
+        print("Candidatos:", list(top_k_mayores.keys()))
         print("top_k_mayores", top_k_mayores)
         return top_k_mayores.keys()
     except Exception as error:
