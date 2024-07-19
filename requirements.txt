@@ -25,3 +25,4 @@ pytesseract
 firebase_admin
 poppler-utils
 tesseract-ocr
+geopy
