@@ -211,7 +211,12 @@ def get_fields_of_cv(email: str):
 
         resume_dict = ResumeProcessor(file_path).process()
 
-        print("resume_dict", resume_dict)
+        print("education", resume_dict["education"])
+        print("experience", resume_dict["experience"])
+        print("job_title", resume_dict["job_title"])
+        print("skills", resume_dict["skills"])
+        print("model_data", resume_dict["model_data"])
+        
 
         return ResumeFields(
             education=resume_dict["education"],
