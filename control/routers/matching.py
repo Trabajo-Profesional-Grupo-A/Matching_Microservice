@@ -196,28 +196,18 @@ def get_fields_of_cv(email: str):
     file_path = f"/tmp/{email}.pdf"
 
     try:
-        print("antes del blob")
-        print(" file_name", file_name)
+
         blob = bucket.blob(file_name)
-        print("blob", blob)
-        print("despues del blob")
+
         if not blob.exists(): 
             raise HTTPException(status_code=404, detail="File not found")
-        print("antes del download to filename")
-        blob.download_to_filename(file_path)
-        print("despues del download to filename")
         
-        print("File path", file_path)
+        blob.download_to_filename(file_path)
 
         resume_dict = ResumeProcessor(file_path).process()
 
         print("education", resume_dict["education"])
-        print("experience", resume_dict["experience"])
-        print("job_title", resume_dict["job_title"])
-        print("skills", resume_dict["skills"])
-        print("model_data", resume_dict["model_data"])
         
-
         return ResumeFields(
             education=resume_dict["education"],
             experience=resume_dict["experience"],
