@@ -105,11 +105,11 @@ def get_candidates(job_id: str, k: int = 10):
 
         print("candidates", ids)
 
-        dict = JobDescriptionProcessor(' '.join([jd_data["title"], jd_data["description"], ' '.join(jd_data["responsabilities"]), ' '.join(jd_data["requirements"])])).process()
+        dict_jd = JobDescriptionProcessor(' '.join([jd_data["title"], jd_data["description"], ' '.join(jd_data["responsabilities"]), ' '.join(jd_data["requirements"])])).process()
 
-        jd_data["pos_frequencies"] = dict["pos_frequencies"]
-        jd_data["keyterms"] = dict["keyterms"]
-        jd_data["keywords_tfidf"] = dict["keywords_tfidf"]
+        jd_data["pos_frequencies"] = dict_jd["pos_frequencies"]
+        jd_data["keyterms"] = dict_jd["keyterms"]
+        jd_data["keywords_tfidf"] = dict_jd["keywords_tfidf"]
 
 
         for email, score in ids.items():
