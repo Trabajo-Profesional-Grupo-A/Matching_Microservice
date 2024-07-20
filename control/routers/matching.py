@@ -105,6 +105,13 @@ def get_candidates(job_id: str, k: int = 10):
 
         print("candidates", ids)
 
+        dict = JobDescriptionProcessor(' '.join([jd_data["title"], jd_data["description"], ' '.join(jd_data["responsabilities"]), ' '.join(jd_data["requirements"])])).process()
+
+        jd_data["pos_frequencies"] = dict["pos_frequencies"]
+        jd_data["keyterms"] = dict["keyterms"]
+        jd_data["keywords_tfidf"] = dict["keywords_tfidf"]
+
+
         for email, score in ids.items():
             url = API_USERS_URL + f"/users/user/resume/{email}/"
             resume_fields = requests.get(
@@ -134,32 +141,32 @@ def get_candidates(job_id: str, k: int = 10):
                     
             print("3")
 
-            # # Pos frequencies weight
-            # pos_freq_weight = 1.0
-            # for word in data_jd['pos_frequencies'].keys():
-            #     if word in resume_clean_data:
-            #         pos_freq_weight += 0.1
+            print("pos_frequencies", jd_data['pos_frequencies'])
+            # Pos frequencies weight
+            pos_freq_weight = 1.0
+            for word in jd_data['pos_frequencies'].keys():
+                if word in resume_fields["model_data"]:
+                    pos_freq_weight += 0.1
 
-            # # Keyterms and keywords_tfidf weight
-            # keyterms_weight = 1.0
-            # for term in data_jd['keyterms']:
-            #     if term[0] in resume_clean_data:
-            #         keyterms_weight += 0.1
-            # for keyword in data_jd['keywords_tfidf']:
-            #     if keyword in resume_clean_data:
-            #         keyterms_weight += 0.1
+            # Keyterms and keywords_tfidf weight
+            keyterms_weight = 1.0
+            print("key terms", jd_data['keyterms'])
+            for term in jd_data['keyterms']:
+                if term[0] in resume_fields["model_data"]:
+                    keyterms_weight += 0.1
+            
+            print("keywords_tfidf", jd_data['keywords_tfidf'])
+            for keyword in jd_data['keywords_tfidf']:
+                if keyword in resume_fields["model_data"]:
+                    keyterms_weight += 0.1
 
             # Calculate final weighted similarity score
-            final_similarity_score = score * job_title_weight * requirements_weight #* pos_freq_weight * keyterms_weight
+            final_similarity_score = score * job_title_weight * requirements_weight * pos_freq_weight * keyterms_weight
             score_list[email] = final_similarity_score
 
             print("4")
         
         top_k_mayores = dict(sorted(score_list.items(), key=lambda item: item[1], reverse=True)[:k])
-
-        for email, score in top_k_mayores.items():
-            print("Email:", email)
-            print("Score:", score)
         
         print("Candidatos:", list(top_k_mayores.keys()))
         print("top_k_mayores", top_k_mayores)
