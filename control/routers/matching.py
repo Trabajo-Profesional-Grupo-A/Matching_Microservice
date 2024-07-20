@@ -209,14 +209,16 @@ def get_fields_of_cv(email: str):
         
         print("File path", file_path)
 
-        dict = ResumeProcessor(file_path).process()
+        resume_dict = ResumeProcessor(file_path).process()
+
+        print("resume_dict", resume_dict)
 
         return ResumeFields(
-            education=dict["education"],
-            experience=dict["experience"],
-            job_titles=dict["job_title"],
-            skills=dict["skills"],
-            model_data=dict["model_data"]
+            education=resume_dict["education"],
+            experience=resume_dict["experience"],
+            job_titles=resume_dict["job_title"],
+            skills=resume_dict["skills"],
+            model_data=resume_dict["model_data"]
         )
     #http://YOUR_VM_IP:8000
     except Exception as e:
@@ -224,29 +226,3 @@ def get_fields_of_cv(email: str):
     finally:
         if os.path.exists(file_path):
             os.remove(file_path)
-
-# @router.get("/company/data", response_model=DataJD)
-# def get_data_of_jd_str(jd: str):
-#     try:
-#         dict = JobDescriptionProcessor(jd).process()
-
-#         return DataJD(
-#             id=dict["id"],
-#             model_data=dict["model_data"]
-#         )
-    
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# {
-#   "title": "front end developer",
-#   "description": "react js typescript",
-#   "responsabilities": [
-#     "work", "to be in time"
-#   ],
-#   "requirements": [
-#     "html", "css"
-#   ]
-# }
-
-#token messi eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lc3NpIn0.tvDJgzGCRv_FAD4gT006nfElL1TjVoRZkhDmBC8Ma10

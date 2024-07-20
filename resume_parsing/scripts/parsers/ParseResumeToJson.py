@@ -5,7 +5,6 @@ from resume_parsing.scripts.TextCleaner import CountFrequency, TextCleaner
 from resume_parsing.scripts.utils.Utils import generate_unique_id
 
 class ParseResume:
-
     def __init__(self, resume: str, resume_dict_OCR: dict):
         self.resume_data = resume
         self.clean_data = TextCleaner(self.resume_data).clean_text()

@@ -22,7 +22,7 @@ class ResumeProcessor:
         resume_dict_OCR = self._read_resumes_OCR(self.input_file_name)
         print("resume dict ocr", resume_dict_OCR)
         output = ParseResume(data, resume_dict_OCR).get_JSON()
-        print("output parse resume", resume_dict_OCR)
+        print("output parse resume", output)
         return output
  
  
