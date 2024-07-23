@@ -85,7 +85,7 @@ def get_candidates(job_id: str, k: int = 10):
         job_vector = index_jd.fetch(ids=[job_id], namespace="ns1")["vectors"].get(job_id)["values"]
         print("Vector del trabajo:", job_vector)
 
-        n = round(1.5 * k, 0)
+        n = round(2 * k, 0)
 
         print(int(n))
         candidates = index_cv.query(vector=job_vector, include_values = True, top_k=int(n), namespace="ns1")
