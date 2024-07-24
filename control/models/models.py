@@ -40,6 +40,7 @@ class JobDescription(BaseModel):
     description: str
     responsabilities: List[str]
     requirements: List[str]
+    work_model: str
 
 class ModelData(BaseModel):
     """
