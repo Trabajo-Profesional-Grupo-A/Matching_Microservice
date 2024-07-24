@@ -4,8 +4,10 @@ This module contains the API endpoints for the matching service.
 
 import os
 from typing import List
+from resume_parsing.location import get_coordinates_locationiq
 from resume_parsing.scripts import JobDescriptionProcessor
 from resume_parsing.scripts.ResumeProcessor import ResumeProcessor
+from geopy.distance import geodesic
 import requests
 from fastapi import (
     APIRouter,
@@ -16,6 +18,8 @@ from firebase_admin import credentials, storage
 
 API_USERS_URL="https://users-microservice-mmuh.onrender.com"
 API_COMPANIES_URL="https://companies-microservice.onrender.com"
+
+API_LOCATION_KEY = "pk.16ff76ca0f92be97f397a3683dae4e14"
 
 cred = credentials.Certificate("firebase_credentials.json")
 firebase_admin.initialize_app(cred, {"storageBucket": "tpp-grupoa.appspot.com"})
@@ -138,6 +142,8 @@ def get_candidates(job_id: str, k: int = 10):
                     if requirements_weight < 0:
                         requirements_weight = 0
                         return 0
+                elif req in resume_fields["skills"] or req in resume_fields["model_data"]:
+                    requirements_weight += 0.1
                     
             print("3")
 
@@ -160,8 +166,32 @@ def get_candidates(job_id: str, k: int = 10):
                 if keyword in resume_fields["model_data"]:
                     keyterms_weight += 0.1
 
+            location_weight = 1.0
+            if jd_data["work_model"] == "remote":
+                continue
+            elif jd_data["work_model"] == "on-site":
+                company_coordinates = get_coordinates_locationiq(jd_data["address"], API_LOCATION_KEY)
+                user_coordinates = get_coordinates_locationiq(resume_fields["address"], API_LOCATION_KEY)
+                distance_km = geodesic(user_coordinates, company_coordinates).kilometers
+                if distance_km > 50:
+                    location_weight = 0.3
+                elif distance_km < 10:
+                    location_weight = 1.5
+            elif jd_data["work_model"] == "hybrid":
+                company_coordinates = get_coordinates_locationiq(jd_data["address"], API_LOCATION_KEY)
+                user_coordinates = get_coordinates_locationiq(resume_fields["address"], API_LOCATION_KEY)
+                distance_km = geodesic(user_coordinates, company_coordinates).kilometers
+                if distance_km > 50:
+                    location_weight = 0.6
+                elif distance_km < 10:
+                    location_weight = 1.2
+
+
+            #calculate age weight (donde ponemos el age en jd?)
+    
+
             # Calculate final weighted similarity score
-            final_similarity_score = score * job_title_weight * requirements_weight * pos_freq_weight * keyterms_weight
+            final_similarity_score = score * job_title_weight * requirements_weight * pos_freq_weight * keyterms_weight * location_weight
             score_list[email] = final_similarity_score
 
             print("4")
