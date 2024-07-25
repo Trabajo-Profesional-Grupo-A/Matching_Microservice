@@ -2,7 +2,7 @@
 """
 This module is dedicated for all the pydantic models the API will use.
 """
-from typing import List
+from typing import List, Tuple
 from pydantic import BaseModel
 
 
@@ -41,6 +41,7 @@ class JobDescription(BaseModel):
     responsabilities: List[str]
     requirements: List[str]
     work_model: str
+    age_range: Tuple[int, int]
 
 class ModelData(BaseModel):
     """

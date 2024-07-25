@@ -167,9 +167,8 @@ def get_candidates(job_id: str, k: int = 10):
                     keyterms_weight += 0.1
 
             location_weight = 1.0
-            if jd_data["work_model"] == "remote":
-                continue
-            elif jd_data["work_model"] == "on-site":
+
+            if jd_data["work_model"] == "on-site":
                 company_coordinates = get_coordinates_locationiq(jd_data["address"], API_LOCATION_KEY)
                 user_coordinates = get_coordinates_locationiq(resume_fields["address"], API_LOCATION_KEY)
                 distance_km = geodesic(user_coordinates, company_coordinates).kilometers
@@ -182,16 +181,24 @@ def get_candidates(job_id: str, k: int = 10):
                 user_coordinates = get_coordinates_locationiq(resume_fields["address"], API_LOCATION_KEY)
                 distance_km = geodesic(user_coordinates, company_coordinates).kilometers
                 if distance_km > 50:
-                    location_weight = 0.6
+                    location_weight = 0.5
                 elif distance_km < 10:
-                    location_weight = 1.2
+                    location_weight = 1.3
 
 
-            #calculate age weight (donde ponemos el age en jd?)
+            #calculate age weight
+            age_weight = 1.0
+            if resume_fields["age"] < jd_data["age_range"][0]:
+                age_weight -= ((jd_data["age_range"][0] - resume_fields["age"]) * 0.04)
+
+            elif resume_fields["age"] > jd_data["age_range"][1]:    
+                age_weight -= ((resume_fields["age"] - jd_data["age_range"][1]) * 0.04)
+            else:
+                age_weight = 1.5
     
 
             # Calculate final weighted similarity score
-            final_similarity_score = score * job_title_weight * requirements_weight * pos_freq_weight * keyterms_weight * location_weight
+            final_similarity_score = score * job_title_weight * requirements_weight * pos_freq_weight * keyterms_weight * location_weight * age_weight
             score_list[email] = final_similarity_score
 
             print("4")
