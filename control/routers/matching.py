@@ -125,13 +125,13 @@ def get_candidates(job_id: str, k: int = 10):
             # Job title match weight
             job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
 
-            requirements_skills = DataExtractor(jd_data['requirements'].join(' ')).extract_skills()
+            requirements_skills = DataExtractor(' '.join(jd_data['requirements'])).extract_skills()
             print("requirements_skills", requirements_skills)
             
-            requirements_education = DataExtractor(jd_data['requirements'].join(' ')).extract_education_title()
+            requirements_education = DataExtractor(' '.join(jd_data['requirements'])).extract_education_title()
             print("requirements_education", requirements_education)
 
-            qualifications = DataExtractor(jd_data['requirements'].join(' ')).extract_qualifications()
+            qualifications = DataExtractor(' '.join(jd_data['requirements'])).extract_qualifications()
             print("qualifications", qualifications)
 
             # Requirements match weight
