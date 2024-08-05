@@ -354,9 +354,9 @@ class DataExtractor:
         skills_keywords = self._load_keywords(r'./resume_parsing/Data/newSkills.csv')
         skills = set()
 
-        for keyword in skills_keywords:
-            if keyword.lower() in self.doc.text.lower():
-                skills.add(keyword.lower())
+        for skill in self.doc.text.lower().split(' '):
+            if skill.lower() in skills_keywords:
+                skills.add(skill.lower())
                 
         return skills
 
