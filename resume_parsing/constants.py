@@ -57,7 +57,8 @@ DEGREE_PATTERNS = {
         r'\b(B\.?S\.?C?\.?S?|Bachelor\'s (of )?Science|Bachelor of Science in)\b.*?(?=,|$)',
         r'b\\.?s\\.?c\\.?s?\\.?',
         r'bachelor\'s',
-        r'bachelor'
+        r'bachelor',
+        r"\bBachelor's degree in\b\s+([a-zA-Z\s]+)"
     ],
     "MASTER": [
         r'\b(M\.?S\.?C?\.?S?|Master\'s (of )?Science|Master of Science in)\b.*?(?=,|$)',

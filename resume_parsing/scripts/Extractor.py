@@ -355,10 +355,11 @@ class DataExtractor:
         
         skills = set()
 
-        for skill in self.doc.text.lower().split():
-            if skill.lower() in skills_keywords:
-                skills.add(skill.lower())
+        print("clean text ", self.clean_text)
 
+        for skill in self.clean_text.split():
+            if skill in skills_keywords:
+                skills.add(skill)
         return skills
 
     def extract_skills(self):
