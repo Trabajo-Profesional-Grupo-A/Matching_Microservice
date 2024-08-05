@@ -348,16 +348,17 @@ class DataExtractor:
     def _load_keywords(self, file_path):
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
-            return set(row[0] for row in reader)
+            return set(row[0].strip().lower() for row in reader)
         
     def _csv_skills(self):
         skills_keywords = self._load_keywords(r'./resume_parsing/Data/newSkills.csv')
+        
         skills = set()
 
-        for skill in self.doc.text.lower().split(' '):
+        for skill in self.doc.text.lower().split():
             if skill.lower() in skills_keywords:
                 skills.add(skill.lower())
-                
+
         return skills
 
     def extract_skills(self):
