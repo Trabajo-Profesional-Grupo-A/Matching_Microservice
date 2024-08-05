@@ -6,6 +6,7 @@ import os
 from typing import List
 from resume_parsing.location import get_coordinates_locationiq
 from resume_parsing.scripts import JobDescriptionProcessor
+from resume_parsing.scripts.TextCleaner import TextCleaner
 from resume_parsing.scripts.Extractor import DataExtractor
 from resume_parsing.scripts.ResumeProcessor import ResumeProcessor
 from geopy.distance import geodesic
@@ -125,13 +126,13 @@ def get_candidates(job_id: str, k: int = 10):
             # Job title match weight
             job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
 
-            requirements_skills = DataExtractor(' '.join(jd_data['requirements'])).extract_skills()
+            requirements_skills = DataExtractor(TextCleaner(' '.join(jd_data['requirements'])).clean_text()).extract_skills()
             print("requirements_skills", requirements_skills)
             
-            requirements_education = DataExtractor(' '.join(jd_data['requirements'])).extract_education_title()
+            requirements_education = DataExtractor(TextCleaner(' '.join(jd_data['requirements'])).clean_text()).extract_education_title()
             print("requirements_education", requirements_education)
 
-            qualifications = DataExtractor(' '.join(jd_data['requirements'])).extract_qualifications()
+            qualifications = DataExtractor(TextCleaner(' '.join(jd_data['requirements'])).clean_text()).extract_qualifications()
             print("qualifications", qualifications)
 
             # Requirements match weight
