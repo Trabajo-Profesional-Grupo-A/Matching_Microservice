@@ -55,31 +55,29 @@ RESUME_SECTIONS = [
 DEGREE_PATTERNS = {
     "BACHELOR": [
         r'\b(B\.?S\.?C?\.?S?|Bachelor\'s (of )?Science|Bachelor of Science in)\b.*?(?=,|$)',
-        r'b\\.?s\\.?c\\.?s?\\.?',
-        r'bachelor\'s',
-        r'bachelor',
+        r'\bb\.?s\.?c\.?s?\.?\b',
+        r'\bbachelor\'s\b',
+        r'\bbachelor\b',
         r"\bBachelor's degree in\b\s+([a-zA-Z\s]+)"
     ],
     "MASTER": [
         r'\b(M\.?S\.?C?\.?S?|Master\'s (of )?Science|Master of Science in)\b.*?(?=,|$)',
-        r'm\\.?s\\.?c\\.?s?\\.?',
-        r'master\'s',
-        r'master'
+        r'\bm\.?s\.?c\.?s?\.?\b',
+        r'\bmaster\'s\b',
+        r'\bmaster\b'
     ],
     "PHD": [
         r'\b(Ph\.?D\.?|Doctorate|Doctor of Philosophy in)\b.*?(?=,|$)',
         r'\b(D\.?Sc\.?|Doctor of Science in)\b.*?(?=,|$)',
-        r'ph\\.d\\.?',
-        r'doctorate',
-        r'phd'
+        r'\bph\.?d\.?\b',
+        r'\bdoctorate\b',
+        r'\bphd\b'
     ]
 }
 
-
-
 EDUCATION = [
-            'BE','B.E.', 'B.E', 'BS', 'B.S', 
-            'ME', 'M.E', 'M.E.', 'M.B.A', 'MBA', 'MS', 'M.S', 
-            'BTECH', 'B.TECH', 'M.TECH', 'MTECH', 
-            'SSLC', 'SSC' 'HSC', 'CBSE', 'ICSE', 'X', 'XII'
-        ]
+    'BE', 'B.E.', 'B.E', 'BS', 'B.S',
+    'ME', 'M.E', 'M.E.', 'M.B.A', 'MBA', 'MS', 'M.S',
+    'BTECH', 'B.TECH', 'M.TECH', 'MTECH',
+    'SSLC', 'SSC', 'HSC', 'CBSE', 'ICSE', 'X', 'XII'
+]

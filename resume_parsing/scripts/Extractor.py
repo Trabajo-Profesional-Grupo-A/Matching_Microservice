@@ -226,9 +226,6 @@ class DataExtractor:
         """
         Extract education title from a given string. It does so by using the Spacy module.
 
-        Args:
-            text (str): The string from which to extract education title.
-
         Returns:
             list: A list containing the extracted education titles.
         """
@@ -241,29 +238,30 @@ class DataExtractor:
 
         # Extract education degree
         for text in nlp_text:
-            for word in text.split():
-                # Replace all special symbols
-                word_clean = re.sub(r'[?|$|.|!|,]', r'', word)
-                if word_clean.upper() in EDUCATION or word_clean.upper() in DEGREE_PATTERNS.keys():
-                    # Append the entire sentence if the word is found in EDUCATION
-                    education_titles.append(text)
-                    break  # Stop after finding the first match in the sentence
-
-        
+            # Replace all special symbols
+            word_clean = re.sub(r'[?|$|.|!|,]', r'', text).upper()
+            if any(word in word_clean for word in EDUCATION):
+                # Append the entire sentence if the word is found in EDUCATION
+                education_titles.append(text)
+            for patterns in DEGREE_PATTERNS.values():
+                for pattern in patterns:
+                    if re.search(pattern, text, re.IGNORECASE):
+                        education_titles.append(text)
+                        break  # Stop after finding the first match in the sentence
 
         # Post-process to extract only the relevant part of the sentence
         processed_titles = []
         for title in education_titles:
-            match = re.search(r'(' + '|'.join(EDUCATION) + r')\s*.*?,\s*.*?(?=,|$)', title, re.IGNORECASE)
+            match = re.search(r'(' + '|'.join(EDUCATION) + r')\s*.*?(?=,|$)', title, re.IGNORECASE)
             if match:
                 processed_titles.append(match.group(0).strip())
-            for _, patterns in DEGREE_PATTERNS.items():
-                pattern = '|'.join(patterns)
-                match_qual = re.search(pattern, title, re.IGNORECASE)
-                if match_qual:
-                    processed_titles.append(match_qual.group(0).strip())
+            for patterns in DEGREE_PATTERNS.values():
+                for pattern in patterns:
+                    match_qual = re.search(pattern, title, re.IGNORECASE)
+                    if match_qual:
+                        processed_titles.append(match_qual.group(0).strip())
 
-        return processed_titles 
+        return processed_titles
     
     def extract_qualifications(self):
         """
