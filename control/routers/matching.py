@@ -6,6 +6,7 @@ import os
 from typing import List
 from resume_parsing.location import get_coordinates_locationiq
 from resume_parsing.scripts import JobDescriptionProcessor
+from resume_parsing.scripts.Extractor import DataExtractor
 from resume_parsing.scripts.ResumeProcessor import ResumeProcessor
 from geopy.distance import geodesic
 import requests
@@ -87,11 +88,10 @@ def upload_job(job_id: str, job_description: JobDescription):
 def get_candidates(job_id: str, k: int = 10):
     try:
         job_vector = index_jd.fetch(ids=[job_id], namespace="ns1")["vectors"].get(job_id)["values"]
-        print("Vector del trabajo:", job_vector)
 
         n = round(2 * k, 0)
 
-        print(int(n))
+        
         candidates = index_cv.query(vector=job_vector, include_values = True, top_k=int(n), namespace="ns1")
 
         ids = {}
@@ -102,12 +102,10 @@ def get_candidates(job_id: str, k: int = 10):
         jd_data = requests.get(
             url
         )
-        print(jd_data)
+
         jd_data = jd_data.json()
 
         score_list = {}
-
-        print("candidates", ids)
 
         dict_jd = JobDescriptionProcessor(' '.join([jd_data["title"], jd_data["description"], ' '.join(jd_data["responsabilities"]), ' '.join(jd_data["requirements"])])).process()
 
@@ -124,30 +122,40 @@ def get_candidates(job_id: str, k: int = 10):
             
             resume_fields = resume_fields.json()
 
-            print("User", resume_fields)
-            print("JD", jd_data)
-            print("Score", score)
-
-            print("1")
-
             # Job title match weight
             job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
-            print("2")
+
+            requirements_skills = DataExtractor(jd_data['requirements'].join(' ')).extract_skills()
+            print("requirements_skills", requirements_skills)
+            
+            requirements_education = DataExtractor(jd_data['requirements'].join(' ')).extract_education_title()
+            print("requirements_education", requirements_education)
+
+            qualifications = DataExtractor(jd_data['requirements'].join(' ')).extract_qualifications()
+            print("qualifications", qualifications)
 
             # Requirements match weight
-            requirements_weight = 1.0
-            for req in jd_data['requirements']:
+            requirements_skills_weight = 1.0
+            for req in requirements_skills:
                 if req not in resume_fields["skills"] and req not in resume_fields["model_data"]:
-                    requirements_weight -= 0.1
-                    if requirements_weight < 0:
-                        requirements_weight = 0
-                        return 0
+                    requirements_skills_weight -= 0.1
+                    if requirements_skills_weight < 0:
+                        requirements_skills_weight = 0
+                        break
                 elif req in resume_fields["skills"] or req in resume_fields["model_data"]:
-                    requirements_weight += 0.1
-                    
-            print("3")
+                    requirements_skills_weight += 0.1
 
-            print("pos_frequencies", jd_data['pos_frequencies'])
+            requirements_education_weight = 1.0
+            for req in requirements_education:
+                if req not in resume_fields["education"] and req not in resume_fields["model_data"]:
+                    requirements_education_weight -= 0.3
+                    if requirements_education_weight < 0:
+                        requirements_education_weight = 0
+                        break
+                elif req in resume_fields["education"] or req in resume_fields["model_data"]:
+                    requirements_education_weight += 0.3
+                    
+
             # Pos frequencies weight
             pos_freq_weight = 1.0
             for word in jd_data['pos_frequencies'].keys():
@@ -156,12 +164,10 @@ def get_candidates(job_id: str, k: int = 10):
 
             # Keyterms and keywords_tfidf weight
             keyterms_weight = 1.0
-            print("key terms", jd_data['keyterms'])
             for term in jd_data['keyterms']:
                 if term[0] in resume_fields["model_data"]:
                     keyterms_weight += 0.1
             
-            print("keywords_tfidf", jd_data['keywords_tfidf'])
             for keyword in jd_data['keywords_tfidf']:
                 if keyword in resume_fields["model_data"]:
                     keyterms_weight += 0.1
@@ -198,15 +204,11 @@ def get_candidates(job_id: str, k: int = 10):
     
 
             # Calculate final weighted similarity score
-            final_similarity_score = score * job_title_weight * requirements_weight * pos_freq_weight * keyterms_weight * location_weight * age_weight
+            final_similarity_score = score * job_title_weight * requirements_skills_weight * requirements_education_weight * pos_freq_weight * keyterms_weight * location_weight * age_weight
             score_list[email] = final_similarity_score
-
-            print("4")
         
         top_k_mayores = dict(sorted(score_list.items(), key=lambda item: item[1], reverse=True)[:k])
         
-        print("Candidatos:", list(top_k_mayores.keys()))
-        print("top_k_mayores", top_k_mayores)
         return list(top_k_mayores.keys())
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
