@@ -122,6 +122,9 @@ def get_candidates(job_id: str, k: int = 10):
             )
             
             resume_fields = resume_fields.json()
+            
+            print("data cruda", ' '.join(jd_data['requirements']))
+            print("data limpia", TextCleaner(' '.join(jd_data['requirements'])).clean_text())
 
             # Job title match weight
             job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
