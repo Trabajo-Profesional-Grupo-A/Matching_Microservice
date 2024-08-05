@@ -363,6 +363,8 @@ class DataExtractor:
     def extract_skills(self):
         skills_csv = self._csv_skills()
         skills_BERT = self._extract_skills_from_BERT()
+        if self.resume_dict_OCR is None:
+            return list(skills_csv.union(skills_BERT))
         skills_OCR_text = self.resume_dict_OCR.get("Skills").lower()
         skills_OCR = set(skills_OCR_text.split(", "))
          
