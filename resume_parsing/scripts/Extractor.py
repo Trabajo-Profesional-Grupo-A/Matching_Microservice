@@ -241,13 +241,19 @@ class DataExtractor:
             # Replace all special symbols
             word_clean = re.sub(r'[?|$|.|!|,]', r'', text).upper()
             if any(word in word_clean for word in EDUCATION):
+                for word in text.split():
+                    if word in word_clean:
+                        print("word", word)
+                
                 # Append the entire sentence if the word is found in EDUCATION
                 education_titles.append(text)
             for patterns in DEGREE_PATTERNS.values():
                 for pattern in patterns:
                     if re.search(pattern, text, re.IGNORECASE):
-                        education_titles.append(text)
+                        education_titles.append(text)   
                         break  # Stop after finding the first match in the sentence
+
+        print(education_titles)
 
         # Post-process to extract only the relevant part of the sentence
         processed_titles = []
