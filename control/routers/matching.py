@@ -143,6 +143,9 @@ def get_candidates(job_id: str, k: int = 10):
 
             # Requirements match weight
             requirements_skills_weight = 1.0
+            print("skills: ", resume_fields["skills"])
+            print("model_data: ", resume_fields["model_data"])
+
             for req in requirements_skills:
                 if req not in resume_fields["skills"] and req not in resume_fields["model_data"]:
                     requirements_skills_weight -= 0.1
