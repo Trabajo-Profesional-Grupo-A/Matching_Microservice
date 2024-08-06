@@ -75,5 +75,5 @@ EDUCATION = [
     'BE', 'B.E.', 'B.E', 'BS', 'B.S',
     'ME', 'M.E', 'M.E.', 'M.B.A', 'MBA', 'MS', 'M.S',
     'BTECH', 'B.TECH', 'M.TECH', 'MTECH',
-    'SSLC', 'SSC', 'HSC', 'CBSE', 'ICSE', 'X', 'XII'
+    'SSLC', 'SSC', 'HSC', 'CBSE', 'ICSE',
 ]
