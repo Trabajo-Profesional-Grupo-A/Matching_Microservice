@@ -120,6 +120,9 @@ def get_candidates(job_id: str, k: int = 10):
         
         requirements_education = DataExtractor(' '.join(jd_data['requirements'])).extract_education_title()
 
+        print("requirements_skills: ", requirements_skills)
+        print("requirements_education: ", requirements_education)
+
         for email, score in ids.items():
             print("Candidato: ", email)
             print("Score inicial: ", score)
@@ -152,13 +155,16 @@ def get_candidates(job_id: str, k: int = 10):
             print("requirements_skills_weight: ", requirements_skills_weight)
 
             requirements_education_weight = 1.0
+
+            cleaned_education = TextCleaner(resume_fields["education"]).clean_text()
+
             for req in requirements_education:
-                if req not in resume_fields["education"] and TextCleaner(req).clean_text() not in resume_fields["model_data"]:
+                if req not in cleaned_education and req not in resume_fields["model_data"]:
                     requirements_education_weight -= 0.3
                     if requirements_education_weight < 0:
                         requirements_education_weight = 0
                         break
-                elif req in resume_fields["education"] or TextCleaner(req).clean_text() in resume_fields["model_data"]:
+                elif req in cleaned_education or req in resume_fields["model_data"]:
                     requirements_education_weight += 0.3
             
             print("requirements_education_weight: ", requirements_education_weight)

@@ -222,52 +222,22 @@ class DataExtractor:
         """
         return self.resume_dict_OCR.get("Extra")
     
+    def _load_education_titles(self, file_path):
+        with open(file_path, 'r') as file:
+            reader = csv.reader(file)
+            return set(row[0].strip().lower() for row in reader)
+    
     def extract_education_title(self):
-        """
-        Extract education title from a given string. It does so by using the Spacy module.
+        education_titles = self._load_education_titles(r'./resume_parsing/Data/majors.csv')
+        
+        titles = set()
 
-        Returns:
-            list: A list containing the extracted education titles.
-        """
-        # Sentence Tokenizer
-        nlp_text = [sent.text.strip() for sent in self.doc.sents]
-
-        education_titles = []
-
-        print("nlp text", nlp_text)
-
-        # Extract education degree
-        for text in nlp_text:
-            # Replace all special symbols
-            word_clean = re.sub(r'[?|$|.|!|,]', r'', text).upper()
-            if any(word in word_clean for word in EDUCATION):
-                for word in EDUCATION:
-                    if word in word_clean:
-                        print("word", word)
-                
-                # Append the entire sentence if the word is found in EDUCATION
-                education_titles.append(text)
-            for patterns in DEGREE_PATTERNS.values():
-                for pattern in patterns:
-                    if re.search(pattern, text, re.IGNORECASE):
-                        education_titles.append(text)   
-                        break  # Stop after finding the first match in the sentence
-
-        print(education_titles)
-
-        # Post-process to extract only the relevant part of the sentence
-        processed_titles = []
         for title in education_titles:
-            match = re.search(r'(' + '|'.join(EDUCATION) + r')\s*.*?(?=,|$)', title, re.IGNORECASE)
-            if match:
-                processed_titles.append(match.group(0).strip())
-            for patterns in DEGREE_PATTERNS.values():
-                for pattern in patterns:
-                    match_qual = re.search(pattern, title, re.IGNORECASE)
-                    if match_qual:
-                        processed_titles.append(match_qual.group(0).strip())
+            if title in self.text.lower():
+                titles.add(TextCleaner(title).clean_text())
+        
+        return titles
 
-        return processed_titles
     
     def extract_qualifications(self):
         """
