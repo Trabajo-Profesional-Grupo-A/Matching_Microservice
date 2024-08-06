@@ -54,18 +54,17 @@ RESUME_SECTIONS = [
 
 DEGREE_PATTERNS = {
     "BACHELOR": [
-        r'\b(B\.?S\.?C?\.?S?|Bachelor\'s (of )?Science|Bachelor of Science in)\b.*?(?=,|$)',
+        r'\b(Bachelor\'s (of )?Science|Bachelor of Science in)\b.*?(?=,|$)',
         r"\bBachelor's degree in\b\s+([a-zA-Z\s]+)"
     ],
     "MASTER": [
-        r'\b(M\.?S\.?C?\.?S?|Master\'s (of )?Science|Master of Science in)\b.*?(?=,|$)',
-        r'\bm\.?s\.?c\.?s?\.?\b',
+        r'\b(Master\'s (of )?Science|Master of Science in)\b.*?(?=,|$)',
         r'\bmaster\'s\b',
         r'\bmaster\b'
-    ],
+    ], 
     "PHD": [
         r'\b(Ph\.?D\.?|Doctorate|Doctor of Philosophy in)\b.*?(?=,|$)',
-        r'\b(D\.?Sc\.?|Doctor of Science in)\b.*?(?=,|$)',
+        r'\b(Doctor of Science in)\b.*?(?=,|$)',
         r'\bph\.?d\.?\b',
         r'\bdoctorate\b',
         r'\bphd\b'
