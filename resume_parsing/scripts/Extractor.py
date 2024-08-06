@@ -241,7 +241,7 @@ class DataExtractor:
             # Replace all special symbols
             word_clean = re.sub(r'[?|$|.|!|,]', r'', text).upper()
             if any(word in word_clean for word in EDUCATION):
-                for word in text.split():
+                for word in EDUCATION:
                     if word in word_clean:
                         print("word", word)
                 
