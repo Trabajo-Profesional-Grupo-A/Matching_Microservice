@@ -110,21 +110,20 @@ def get_candidates(job_id: str, k: int = 10):
 
         dict_jd = JobDescriptionProcessor(' '.join([jd_data["title"], jd_data["description"], ' '.join(jd_data["responsabilities"]), ' '.join(jd_data["requirements"])])).process()
 
+        print("job description: ", dict_jd)
+
         jd_data["pos_frequencies"] = dict_jd["pos_frequencies"]
         jd_data["keyterms"] = dict_jd["keyterms"]
         jd_data["keywords_tfidf"] = dict_jd["keywords_tfidf"]
 
-        print("data cruda", ' '.join(jd_data['requirements']))
-        print("data limpia", TextCleaner(' '.join(jd_data['requirements'])).clean_text())
-
         requirements_skills = DataExtractor(' '.join(jd_data['requirements'])).extract_skills()
-        print("requirements_skills", requirements_skills)
         
         requirements_education = DataExtractor(' '.join(jd_data['requirements'])).extract_education_title()
-        print("requirements_education", requirements_education)
-
 
         for email, score in ids.items():
+            print("Candidato: ", email)
+            print("Score inicial: ", score)
+
             url = API_USERS_URL + f"/users/user/resume/{email}/"
             resume_fields = requests.get(
                 url
@@ -132,8 +131,12 @@ def get_candidates(job_id: str, k: int = 10):
             
             resume_fields = resume_fields.json()
 
+            print("resume_fields del candidato", resume_fields)
+
             # Job title match weight
             job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
+
+            print("job_title_weight: ", job_title_weight)
 
             # Requirements match weight
             requirements_skills_weight = 1.0
@@ -146,6 +149,8 @@ def get_candidates(job_id: str, k: int = 10):
                 elif req in resume_fields["skills"] or req in resume_fields["model_data"]:
                     requirements_skills_weight += 0.1
 
+            print("requirements_skills_weight: ", requirements_skills_weight)
+
             requirements_education_weight = 1.0
             for req in requirements_education:
                 if req not in resume_fields["education"] and TextCleaner(req).clean_text() not in resume_fields["model_data"]:
@@ -155,6 +160,8 @@ def get_candidates(job_id: str, k: int = 10):
                         break
                 elif req in resume_fields["education"] or TextCleaner(req).clean_text() in resume_fields["model_data"]:
                     requirements_education_weight += 0.3
+            
+            print("requirements_education_weight: ", requirements_education_weight)
                     
 
             # Pos frequencies weight
@@ -162,6 +169,8 @@ def get_candidates(job_id: str, k: int = 10):
             for word in jd_data['pos_frequencies'].keys():
                 if word in resume_fields["model_data"]:
                     pos_freq_weight += 0.1
+            
+            print("pos_freq_weight: ", pos_freq_weight)
 
             # Keyterms and keywords_tfidf weight
             keyterms_weight = 1.0
@@ -172,6 +181,10 @@ def get_candidates(job_id: str, k: int = 10):
             for keyword in jd_data['keywords_tfidf']:
                 if keyword in resume_fields["model_data"]:
                     keyterms_weight += 0.1
+
+            print("keyterms_weight: ", keyterms_weight)
+
+            
 
             location_weight = 1.0
 
@@ -192,6 +205,8 @@ def get_candidates(job_id: str, k: int = 10):
                 elif distance_km < 10:
                     location_weight = 1.3
 
+            print("location_weight: ", location_weight)
+
 
             #calculate age weight
             age_weight = 1.0
@@ -202,10 +217,15 @@ def get_candidates(job_id: str, k: int = 10):
                 age_weight -= ((resume_fields["age"] - jd_data["age_range"][1]) * 0.04)
             else:
                 age_weight = 1.5
+
+            print("age_weight: ", age_weight)
     
 
             # Calculate final weighted similarity score
             final_similarity_score = score * job_title_weight * requirements_skills_weight * requirements_education_weight * pos_freq_weight * keyterms_weight * location_weight * age_weight
+            
+            print("final_similarity_score: ", final_similarity_score)
+            
             score_list[email] = final_similarity_score
         
         top_k_mayores = dict(sorted(score_list.items(), key=lambda item: item[1], reverse=True)[:k])
