@@ -114,6 +114,18 @@ def get_candidates(job_id: str, k: int = 10):
         jd_data["keyterms"] = dict_jd["keyterms"]
         jd_data["keywords_tfidf"] = dict_jd["keywords_tfidf"]
 
+        print("data cruda", ' '.join(jd_data['requirements']))
+        print("data limpia", TextCleaner(' '.join(jd_data['requirements'])).clean_text())
+
+        # Job title match weight
+        job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
+
+        requirements_skills = DataExtractor(' '.join(jd_data['requirements'])).extract_skills()
+        print("requirements_skills", requirements_skills)
+        
+        requirements_education = DataExtractor(' '.join(jd_data['requirements'])).extract_education_title()
+        print("requirements_education", requirements_education)
+
 
         for email, score in ids.items():
             url = API_USERS_URL + f"/users/user/resume/{email}/"
@@ -122,21 +134,6 @@ def get_candidates(job_id: str, k: int = 10):
             )
             
             resume_fields = resume_fields.json()
-            
-            print("data cruda", ' '.join(jd_data['requirements']))
-            print("data limpia", TextCleaner(' '.join(jd_data['requirements'])).clean_text())
-
-            # Job title match weight
-            job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
-
-            requirements_skills = DataExtractor(' '.join(jd_data['requirements'])).extract_skills()
-            print("requirements_skills", requirements_skills)
-            
-            requirements_education = DataExtractor(' '.join(jd_data['requirements'])).extract_education_title()
-            print("requirements_education", requirements_education)
-
-            qualifications = DataExtractor(' '.join(jd_data['requirements'])).extract_qualifications()
-            print("qualifications", qualifications)
 
             # Requirements match weight
             requirements_skills_weight = 1.0
@@ -151,12 +148,12 @@ def get_candidates(job_id: str, k: int = 10):
 
             requirements_education_weight = 1.0
             for req in requirements_education:
-                if req not in resume_fields["education"] and req not in resume_fields["model_data"]:
+                if req not in resume_fields["education"] and TextCleaner(req).clean_text() not in resume_fields["model_data"]:
                     requirements_education_weight -= 0.3
                     if requirements_education_weight < 0:
                         requirements_education_weight = 0
                         break
-                elif req in resume_fields["education"] or req in resume_fields["model_data"]:
+                elif req in resume_fields["education"] or TextCleaner(req).clean_text() in resume_fields["model_data"]:
                     requirements_education_weight += 0.3
                     
 
