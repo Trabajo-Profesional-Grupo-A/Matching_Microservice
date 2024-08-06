@@ -110,7 +110,7 @@ def get_candidates(job_id: str, k: int = 10):
 
         dict_jd = JobDescriptionProcessor(' '.join([jd_data["title"], jd_data["description"], ' '.join(jd_data["responsabilities"]), ' '.join(jd_data["requirements"])])).process()
 
-        print("job description: ", dict_jd)
+        #print("job description: ", dict_jd)
 
         jd_data["pos_frequencies"] = dict_jd["pos_frequencies"]
         jd_data["keyterms"] = dict_jd["keyterms"]
@@ -131,7 +131,7 @@ def get_candidates(job_id: str, k: int = 10):
             
             resume_fields = resume_fields.json()
 
-            print("resume_fields del candidato", resume_fields)
+            #print("resume_fields del candidato", resume_fields)
 
             # Job title match weight
             job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
