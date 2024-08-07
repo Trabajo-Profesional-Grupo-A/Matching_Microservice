@@ -139,7 +139,7 @@ def get_candidates(job_id: str, k: int = 10):
             print("job titles resume: ", resume_fields["job_titles"])
 
             # Job title match weight
-            job_title_weight = 1.5 if jd_data['title'] in resume_fields["job_titles"] else 1.0
+            job_title_weight = 1.5 if jd_data['title'].lower() in resume_fields["job_titles"] else 1.0
 
             print("job_title_weight: ", job_title_weight)
 
@@ -165,12 +165,12 @@ def get_candidates(job_id: str, k: int = 10):
 
             for req in requirements_education:
                 if req not in cleaned_education and req not in resume_fields["model_data"]:
-                    requirements_education_weight -= 0.3
+                    requirements_education_weight -= 0.2
                     if requirements_education_weight < 0:
                         requirements_education_weight = 0
                         break
                 elif req in cleaned_education or req in resume_fields["model_data"]:
-                    requirements_education_weight += 0.3
+                    requirements_education_weight += 0.2
             
             print("requirements_education_weight: ", requirements_education_weight)
                     
