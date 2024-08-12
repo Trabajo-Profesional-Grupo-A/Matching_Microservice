@@ -245,10 +245,10 @@ def get_candidates(job_id: str, k: int = 10):
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
 
-@router.delete("/matching/candidate/{user_id}/")
-def delete_candidate(user_id: int):
+@router.delete("/matching/candidate/{email}/")
+def delete_candidate(email: str):
     try:
-        index_cv.delete(ids=[str(user_id)], namespace="ns1")
+        index_cv.delete(ids=[email], namespace="ns1")
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
     return {"message": "Candidate deleted successfully"}
