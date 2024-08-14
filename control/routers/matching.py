@@ -232,8 +232,8 @@ def get_candidates(job_id: str, k: int = 10):
 
             job_preference_weight = 1.0
             
-            if resume_fields["job_preferences"] is not None:
-                job_preference_weight = 1.3 if jd_data['title'].lower() in resume_fields["job_preferences"] else 0.5
+            #if resume_fields["job_preferences"] is not None:
+            #    job_preference_weight = 1.3 if jd_data['title'].lower() in resume_fields["job_preferences"] else 0.5
 
     
 
