@@ -92,7 +92,6 @@ def get_candidates(job_id: str, k: int = 10):
 
         n = round(2 * k, 0)
 
-        
         candidates = index_cv.query(vector=job_vector, include_values = True, top_k=int(n), namespace="ns1")
 
         ids = {}
@@ -230,10 +229,16 @@ def get_candidates(job_id: str, k: int = 10):
                 age_weight = 1.5
 
             print("age_weight: ", age_weight)
+
+            job_preference_weight = 1.0
+            
+            if resume_fields["job_preferences"] is not None:
+                job_preference_weight = 1.3 if jd_data['title'].lower() in resume_fields["job_preferences"] else 0.5
+
     
 
             # Calculate final weighted similarity score
-            final_similarity_score = score * job_title_weight * requirements_skills_weight * requirements_education_weight * pos_freq_weight * keyterms_weight * location_weight * age_weight
+            final_similarity_score = score * job_title_weight * requirements_skills_weight * requirements_education_weight * pos_freq_weight * keyterms_weight * location_weight * age_weight * job_preference_weight
             
             print("final_similarity_score: ", final_similarity_score)
             
