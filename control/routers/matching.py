@@ -138,7 +138,7 @@ def get_candidates(job_id: str, k: int = 10):
             print("job titles resume: ", resume_fields["job_titles"])
 
             # Job title match weight
-            job_title_weight = 1.5 if jd_data['title'].lower() in resume_fields["job_titles"] else 1.0
+            job_title_weight = 1.2 if jd_data['title'].lower() in resume_fields["job_titles"] else 1.0
 
             print("job_title_weight: ", job_title_weight)
 
@@ -164,12 +164,12 @@ def get_candidates(job_id: str, k: int = 10):
 
             for req in requirements_education:
                 if req not in cleaned_education and req not in resume_fields["model_data"]:
-                    requirements_education_weight -= 0.2
+                    requirements_education_weight -= 0.1
                     if requirements_education_weight < 0:
                         requirements_education_weight = 0
                         break
                 elif req in cleaned_education or req in resume_fields["model_data"]:
-                    requirements_education_weight += 0.2
+                    requirements_education_weight += 0.1
             
             print("requirements_education_weight: ", requirements_education_weight)
                     
@@ -205,15 +205,15 @@ def get_candidates(job_id: str, k: int = 10):
                 if distance_km > 50:
                     location_weight = 0.3
                 elif distance_km < 10:
-                    location_weight = 1.5
+                    location_weight = 1.2
             elif jd_data["work_model"] == "hybrid":
                 company_coordinates = get_coordinates_locationiq(jd_data["address"], API_LOCATION_KEY)
                 user_coordinates = get_coordinates_locationiq(resume_fields["address"], API_LOCATION_KEY)
                 distance_km = geodesic(user_coordinates, company_coordinates).kilometers
                 if distance_km > 50:
-                    location_weight = 0.5
+                    location_weight = 0.6
                 elif distance_km < 10:
-                    location_weight = 1.3
+                    location_weight = 1.1
 
             print("location_weight: ", location_weight)
 
@@ -226,7 +226,7 @@ def get_candidates(job_id: str, k: int = 10):
             elif resume_fields["age"] > jd_data["age_range"][1]:    
                 age_weight -= ((resume_fields["age"] - jd_data["age_range"][1]) * 0.04)
             else:
-                age_weight = 1.5
+                age_weight = 1.2
 
             print("age_weight: ", age_weight)
 
