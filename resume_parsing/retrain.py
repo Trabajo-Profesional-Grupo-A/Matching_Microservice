@@ -1,12 +1,8 @@
 # Import libraries
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk.tokenize import word_tokenize
-from numpy.linalg import norm
-from termcolor import colored
 import pandas as pd
 import numpy as np
-import requests
-import PyPDF2
 import re
 import nltk
 from nltk.corpus import stopwords
