@@ -5,16 +5,24 @@ This module contains the API endpoints for the matching service.
 import os
 from typing import List
 from resume_parsing.location import get_coordinates_locationiq
+from resume_parsing.retrain import retrain
 from resume_parsing.scripts import JobDescriptionProcessor
 from resume_parsing.scripts.TextCleaner import TextCleaner
 from resume_parsing.scripts.Extractor import DataExtractor
 from resume_parsing.scripts.ResumeProcessor import ResumeProcessor
 from geopy.distance import geodesic
+from concurrent.futures import ThreadPoolExecutor
+import threading
+
+executor = ThreadPoolExecutor(max_workers=1)
+
 import requests
 from fastapi import (
     APIRouter,
     HTTPException,
 )
+from gensim.models import Doc2Vec
+
 import firebase_admin
 from firebase_admin import credentials, storage
 
@@ -39,10 +47,19 @@ router = APIRouter(
 )
 origins = ["*"]
 
+def retrain_in_background():
+    global model
+    print("Arraco a entrenar")
+    retrain()  # Reentrena el modelo
+    print("Termine de entrenar")
+
+    model = Doc2Vec.load('./models/cv_job_maching_vector_size_10_min_count_5_window_3_epochs_50.model')  # Carga el nuevo modelo
+
 
 @router.post("/matching/candidate/{user_email}/")
 def upload_candidate(user_email: str, user_model_data: ModelData):
     try:
+        global model
         candidate_vector = model.infer_vector(user_model_data.model_data.split())
         
         index_cv.upsert(
@@ -63,6 +80,8 @@ def upload_job(job_id: str, job_description: JobDescription):
         print("job_id", job_id)
         print("job_description", job_description)
 
+        print("var")
+
         model_data = ""
         model_data += job_description.title + " "
         model_data += job_description.description + " "
@@ -71,7 +90,19 @@ def upload_job(job_id: str, job_description: JobDescription):
 
         dict = JobDescriptionProcessor(model_data).process()
 
+        with open("./resume_parsing/Data/newJobDesc.csv", "a") as file:
+            file.write(dict["model_data"] + "\n")
+
+        global model
+
         job_vector = model.infer_vector(dict["model_data"].split())
+
+        # Chequeo si hay que reentrenar
+        print("lineas del archivo", len(open("./resume_parsing/Data/newJobDesc.csv").readlines()))
+        if (len(open("./resume_parsing/Data/newJobDesc.csv").readlines()) % 50) == 0:
+            print("retrain")
+            executor.submit(retrain_in_background)
+
 
         print("Vector del candidato:", job_vector)
         
