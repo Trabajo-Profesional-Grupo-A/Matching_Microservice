@@ -270,12 +270,18 @@ def get_candidates(job_id: str, k: int = 10):
 
             print("job_preference_weight: ", job_preference_weight)
 
+            years_of_experience_weight = 1.0
+            if resume_fields["years_of_experience"] < jd_data["years_of_experience"]:
+                years_of_experience_weight -= ((jd_data["years_of_experience"] - resume_fields["years_of_experience"]) * 0.04)
+
             # Calculate final weighted similarity score
-            final_similarity_score = score * job_title_weight * requirements_skills_weight * requirements_education_weight * pos_freq_weight * keyterms_weight * location_weight * age_weight * job_preference_weight
+            final_similarity_score = score * job_title_weight * requirements_skills_weight * requirements_education_weight * pos_freq_weight * keyterms_weight * location_weight * age_weight * job_preference_weight * years_of_experience_weight
             
             print("final_similarity_score: ", final_similarity_score)
             
             score_list[email] = final_similarity_score
+
+
         
         top_k_mayores = dict(sorted(score_list.items(), key=lambda item: item[1], reverse=True)[:k])
         
