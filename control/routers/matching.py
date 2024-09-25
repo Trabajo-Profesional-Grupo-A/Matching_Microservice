@@ -59,7 +59,12 @@ def retrain_in_background():
     model = Doc2Vec.load('./models/cv_job_maching_vector_size_10_min_count_5_window_3_epochs_50.model')  # Carga el nuevo modelo
 
 def check_new_match(user_email):
-    job_ids = index_jd.fetch(ids=[], namespace="ns1")["vectors"].keys()
+    print("coso de brandon", index_jd.list(namespace='ns1'))
+    
+    job_ids = []
+    for id in index_jd.list(namespace='ns1'):
+        job_ids.append(id)
+    
 
     print("job_ids", job_ids)
         
@@ -68,7 +73,7 @@ def check_new_match(user_email):
 
         if top_candidates[0] == user_email:
             print("Match encontrado")
-            
+
     return
 
 
