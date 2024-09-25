@@ -61,10 +61,7 @@ def retrain_in_background():
 def check_new_match(user_email):
     print("coso de brandon", index_jd.list(namespace='ns1'))
     
-    job_ids = []
-    for id in index_jd.list(namespace='ns1'):
-        job_ids.append(id)
-    
+    job_ids = index_jd.list(namespace='ns1')
 
     print("job_ids", job_ids)
         
