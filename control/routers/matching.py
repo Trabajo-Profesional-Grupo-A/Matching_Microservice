@@ -61,11 +61,14 @@ def retrain_in_background():
 def check_new_match(user_email):
     print("coso de brandon", index_jd.list(namespace='ns1'))
     
-    job_ids = index_jd.list(namespace='ns1')
+    job_ids = []
+    for ids in index_jd.list(namespace='ns1'):
+        job_ids.append(ids)
 
-    print("job_ids", job_ids)
+
+    print("job_ids", job_ids[0])
         
-    for job_id in job_ids:
+    for job_id in job_ids[0]:
         top_candidates = get_top_candidates(job_id, AMOUNT_COMPANIES_CHECK)
 
         if top_candidates[0] == user_email:
