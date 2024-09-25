@@ -71,6 +71,8 @@ def check_new_match(user_email):
     for job_id in job_ids[0]:
         top_candidates = get_top_candidates(job_id, AMOUNT_COMPANIES_CHECK)
 
+        print(f"top_candidates para id {job_id}: {top_candidates}")
+
         if top_candidates[0] == user_email:
             print("Match encontrado")
 
