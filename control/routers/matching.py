@@ -29,6 +29,7 @@ from firebase_admin import credentials, storage
 
 API_USERS_URL="https://users-microservice-mmuh.onrender.com"
 API_COMPANIES_URL="https://companies-microservice.onrender.com"
+API_NOTIFICATION_URL="https://notification-microservice-xc3v.onrender.com"
 
 API_LOCATION_KEY = "pk.16ff76ca0f92be97f397a3683dae4e14"
 AMOUNT_COMPANIES_CHECK = 3
@@ -76,7 +77,29 @@ def check_new_match(user_email):
 
         if list(top_candidates.keys())[0] == user_email:
             print("Match encontrado")
+            url = f"{API_COMPANIES_URL}/company/job_description_to_notify/{job_id}"
 
+            response = requests.get(url)
+
+            jd_title = response.json()["title"]
+            email_user = response.json()["email"]
+
+            data = {
+                "email_sender": "app",
+                "email_receivers": [
+                    email_user
+                ],
+                "title": f"New Candidate for {jd_title}",
+                "body": "There's a new candidate who could be a perfect match. Check out his profile now.",
+                "data": {},
+                "type": "new_candidate",
+                "name_sender": "app",
+                "avatar_sender": "app"
+            }
+
+            url = f"{API_NOTIFICATION_URL}/notifications/device-token/send"
+
+            requests.post(url, json=data)
 
 
 @router.post("/matching/candidate/{user_email}/")
