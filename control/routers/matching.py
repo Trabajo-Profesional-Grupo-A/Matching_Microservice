@@ -55,7 +55,7 @@ def retrain_in_background():
     print("Arraco a entrenar")
     retrain()  # Reentrena el modelo
     print("Termine de entrenar")
-    
+
 
     model = Doc2Vec.load('./models/cv_job_maching_vector_size_10_min_count_5_window_3_epochs_50.model')  # Carga el nuevo modelo
 
@@ -92,7 +92,7 @@ def upload_candidate(user_email: str, user_model_data: ModelData):
             namespace="ns1"
         )
 
-        executor.submit(check_new_match(user_email))
+        executor.submit(check_new_match, user_email)
 
     except Exception as error:
         raise HTTPException(status_code=BAD_REQUEST, detail=str(error)) from error
