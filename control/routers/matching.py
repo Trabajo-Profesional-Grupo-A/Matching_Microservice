@@ -77,6 +77,9 @@ def check_new_match(user_email):
 
         if list(top_candidates.keys())[0] == user_email:
             print("Match encontrado")
+
+            print("job_id", job_id)
+            
             url = f"{API_COMPANIES_URL}/company/job_description_to_notify/{job_id}"
 
             response = requests.get(url)
