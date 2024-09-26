@@ -84,6 +84,9 @@ def check_new_match(user_email):
             jd_title = response.json()["title"]
             email_user = response.json()["email"]
 
+            print("jd_title", jd_title)
+            print("email_user", email_user)
+
             data = {
                 "email_sender": "app",
                 "email_receivers": [
@@ -97,9 +100,18 @@ def check_new_match(user_email):
                 "avatar_sender": "app"
             }
 
+            print("data", data)
+
             url = f"{API_NOTIFICATION_URL}/notifications/device-token/send"
 
-            requests.post(url, json=data)
+            print("url", url)
+            try:
+                requests.post(url, json=data)
+            except Exception as e:
+                print("Error en el request")
+                print(e)
+
+            print("Notificacion enviada")
 
 
 @router.post("/matching/candidate/{user_email}/")
