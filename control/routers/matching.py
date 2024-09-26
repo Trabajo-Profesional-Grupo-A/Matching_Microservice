@@ -79,8 +79,8 @@ def check_new_match(user_email):
             print("Match encontrado")
 
             print("job_id", job_id)
-            
-            url = f"{API_COMPANIES_URL}/company/job_description_to_notify/{job_id}"
+
+            url = f"{API_COMPANIES_URL}companies/company/job_description_to_notify/{job_id}"
 
             response = requests.get(url)
 
