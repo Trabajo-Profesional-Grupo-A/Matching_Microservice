@@ -97,7 +97,7 @@ def check_new_match(user_email):
                 ],
                 "title": f"New Candidate for {jd_title}",
                 "body": "There's a new candidate who could be a perfect match. Check out his profile now.",
-                "data": {},
+                "data": {"email_candidate": user_email},
                 "type": "new_candidate",
                 "name_sender": "app",
                 "avatar_sender": "app"
