@@ -191,9 +191,8 @@ def get_candidates(job_id: str, k: int = 10):
 def get_top_candidates(job_id, k):
     job_vector = index_jd.fetch(ids=[job_id], namespace="ns1")["vectors"].get(job_id)["values"]
 
-    n = round(2 * k, 0)
 
-    candidates = index_cv.query(vector=job_vector, include_values = True, top_k=int(n), namespace="ns1")
+    candidates = index_cv.query(vector=job_vector, include_values = True, top_k=50, namespace="ns1")
 
     ids = {}
     for candidate in candidates.get("matches"):
